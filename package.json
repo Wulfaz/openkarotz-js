@@ -1,25 +1,29 @@
 {
   "name": "openkarotz-js",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "description": "JavaScript library for OpenKarotz API",
-  "homepage": "http://github.com/hobbe/openkarotz-js",
+  "homepage": "http://github.com/wulfaz/openkarotz-js",
   "author": "Olivier Bagot (http://github.com/hobbe)",
   "keywords": [
     "openkarotz"
   ],
+  "maintainers": [
+    "Lionel Caillis (http://github.com/wulaz)"
+  ],
   "contributors": [
-    "Olivier Bagot (http://github.com/hobbe)"
+    "Olivier Bagot (http://github.com/hobbe)",
+    "Lionel Caillis (http://github.com/wulfaz)"
   ],
   "bugs": {
-    "url": "http://github.com/hobbe/openkarotz-js/issues"
+    "url": "http://github.com/wulfaz/openkarotz-js/issues"
   },
   "license": {
     "type": "MIT",
-    "url": "http://github.com/hobbe/openkarotz-js/raw/master/LICENSE"
+    "url": "http://github.com/wulfaz/openkarotz-js/raw/master/LICENSE"
   },
   "main": "openkarotz.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/hobbe/openkarotz-js.git"
+    "url": "git://github.com/wulfaz/openkarotz-js.git"
   }
 }

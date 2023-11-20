@@ -4,7 +4,7 @@
 
 JavaScript library for OpenKarotz API.
 
-Current version is 0.4.0.
+Current version is 0.5.0.
 
 This library depends on [jQuery](http://jquery.com/).
 
@@ -58,8 +58,9 @@ K.ledPulse("FF00FF", function() { K.ears(5, 5); });
 
 ## License ##
 
+Copyright (c) 2023 Lionel Caillis
 Copyright (c) 2013-2014 Olivier Bagot
 
 Licensed under [The MIT License (MIT)](http://opensource.org/licenses/MIT)
 
-See [LICENSE](https://github.com/hobbe/openkarotz-js/raw/master/LICENSE)
+See [LICENSE](https://github.com/wulfaz/openkarotz-js/raw/master/LICENSE)
