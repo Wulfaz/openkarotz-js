@@ -1,5 +1,6 @@
 /*!
  * OpenKarotz.js - openkarotz-js
+ * Copyright (c) 2023 Lionel Caillis (http://github.com/wulfaz/openkarotz-js)
  * Copyright (c) 2013-2014 Olivier Bagot (http://github.com/hobbe/openkarotz-js)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,10 +31,12 @@
  * @module openkarotz-js
  * @overview JavaScript library to control {@link http://openkarotz.filippi.org/ OpenKarotz}.
  * This library enables integration with an OpenKarotz device through its APIs.
- * @version 0.4.0
+ * @version 0.5.0
+ * @copyright 2023, Lionel Caillis ({@link http://github.com/wulfaz})
  * @copyright 2013, Olivier Bagot ({@link http://github.com/hobbe})
  * @license {@link http://github.com/hobbe/openkarotz-js/raw/master/LICENSE MIT License}
  * @author Olivier Bagot ({@link http://github.com/hobbe/openkarotz-js})
+ * @contributor Lionel Caillis ({@link http://github.com/wulfaz/openkarotz-js})
  */
 
 /**
@@ -153,7 +156,6 @@ var OpenKarotz = function (karotz_ip) {
 	var apiRfidStartRecord = karotz_api + '/rfid_start_record';
 	var apiRfidStopRecord = karotz_api + '/rfid_stop_record';
 	var apiMoodsList = karotz_api + '/moods_list';
-
 	var apiMoods = karotz_api + '/apps/moods';
 
 	/**
@@ -223,11 +225,10 @@ var OpenKarotz = function (karotz_ip) {
 	 */
 	this.status = function (onSuccess, onFailure) {
 		// Special handling of status API because no "return" in response
-		var api = apiStatus;
 		var carrot = this;
-		console.log('Calling: ' + api);
-		$.get(api, function(data) {
-			console.log(api + ' result: ' + data);
+		console.log('Calling: ' + apiStatus);
+		$.get(apiStatus, function(data) {
+			console.log(apiStatus + ' result: ' + data);
 			if (data) {
 				var result = JSON.parse(data);
 				carrot.state = result;
@@ -252,8 +253,7 @@ var OpenKarotz = function (karotz_ip) {
 	 */
 	this.sleep = function (onSuccess, onFailure) {
 		var carrot = this;
-		var api = apiSleep;
-		callapi(api, function() {
+		callapi(apiSleep, function() {
 			carrot.state.sleep = 1;
 			onSuccess();
 		}, onFailure);
@@ -267,13 +267,12 @@ var OpenKarotz = function (karotz_ip) {
 	 * @param {requestCallback} [onFailure] - if defined, called on failed API execution with parameter: error message
 	 */
 	this.wakeup = function (silent, onSuccess, onFailure) {
-		var silentOption = 'silent=0';
+		var options = "";
 		if (silent && silent === true) {
-			silentOption = 'silent=1';
+			options = "?silent=1";
 		}
 		var carrot = this;
-		var api = apiWakeup + '?' + silentOption;
-		callapi(api, function() {
+		callapi(apiWakeup + options, function() {
 			carrot.state.sleep = 0;
 			onSuccess();
 		}, onFailure);
@@ -286,8 +285,7 @@ var OpenKarotz = function (karotz_ip) {
 	 * @param {requestCallback} [onFailure] - if defined, called on failed API execution with parameter: error message
 	 */
 	this.reboot = function (onSuccess, onFailure) {
-		var api = apiReboot;
-		callapi(api, onSuccess, onFailure);
+		callapi(apiReboot, onSuccess, onFailure);
 	};
 
 	/**
@@ -298,8 +296,8 @@ var OpenKarotz = function (karotz_ip) {
 	 * @param {requestCallback} [onFailure] - if defined, called on failed API execution with parameter: error message
 	 */
 	this.sound = function (url, onSuccess, onFailure) {
-		var api = apiSound + "?url=" + url;
-		callapi(api, onSuccess, onFailure);
+		var options = "?url=" + url;
+		callapi(apiSound + options, onSuccess, onFailure);
 	};
 
 	/**
@@ -310,8 +308,8 @@ var OpenKarotz = function (karotz_ip) {
 	 * @param {requestCallback} [onFailure] - if defined, called on failed API execution with parameter: error message
 	 */
 	this.soundInternal = function (id, onSuccess, onFailure) {
-		var api = apiSound + "?id=" + id;
-		callapi(api, onSuccess, onFailure);
+		var options = "?id=" + id;
+		callapi(apiSound + options, onSuccess, onFailure);
 	};
 
 	/**
@@ -322,8 +320,8 @@ var OpenKarotz = function (karotz_ip) {
 	 * @param {requestCallback} [onFailure] - if defined, called on failed API execution with parameter: error message
 	 */
 	this.soundControl = function (cmd, onSuccess, onFailure) {
-		var api = apiSoundControl + "?cmd=" + cmd;
-		callapi(api, onSuccess, onFailure);
+		var options = "?cmd=" + cmd;
+		callapi(apiSoundControl + options, onSuccess, onFailure);
 	};
 
 	/**
@@ -357,12 +355,11 @@ var OpenKarotz = function (karotz_ip) {
 	 * @param {requestCallback} [onFailure] - if defined, called on failed API execution with parameter: error message
 	 */
 	this.leds = function (color, pulse, onSuccess, onFailure) {
-		var pulseOption = "?";
-		if (pulse && pulse == true) {
-			pulseOption += "pulse=1&";
+		var options = "?color=" + color;
+		if (pulse && pulse === true) {
+			options += "&pulse=1";
 		}
-		var api = apiLeds + pulseOption + "color=" + color;
-		callapi(api, onSuccess, onFailure);
+		callapi(apiLeds + options, onSuccess, onFailure);
 	};
 
 	/**
@@ -399,12 +396,11 @@ var OpenKarotz = function (karotz_ip) {
 	 * @param {requestCallback} [onFailure] - if defined, called on failed API execution with parameter: error message
 	 */
 	this.ears = function (left, right, noreset, onSuccess, onFailure) {
-		var noresetOption = '';
+		var options = "?left=" + left + "&right=" + right;
 		if (noreset && noreset === true) {
-			noresetOption = '&noreset=1';
+			options += "&noreset=1";
 		}
-		var api = apiEars + "?left=" + left + "&right=" + right + noresetOption;
-		callapi(api, onSuccess, onFailure);
+		callapi(apiEars + options, onSuccess, onFailure);
 	};
 
 	/**
@@ -414,8 +410,7 @@ var OpenKarotz = function (karotz_ip) {
 	 * @param {requestCallback} [onFailure] - if defined, called on failed API execution with parameter: error message
 	 */
 	this.earsReset = function (onSuccess, onFailure) {
-		var api = apiEarsReset;
-		callapi(api, onSuccess, onFailure);
+		callapi(apiEarsReset, onSuccess, onFailure);
 	};
 
 	/**
@@ -425,8 +420,7 @@ var OpenKarotz = function (karotz_ip) {
 	 * @param {requestCallback} [onFailure] - if defined, called on failed API execution with parameter: error message
 	 */
 	this.earsRandom = function (onSuccess, onFailure) {
-		var api = apiEarsRandom;
-		callapi(api, onSuccess, onFailure);
+		callapi(apiEarsRandom, onSuccess, onFailure);
 	};
 
 	/**
@@ -437,12 +431,11 @@ var OpenKarotz = function (karotz_ip) {
 	 * @param {requestCallback} [onFailure] - if defined, called on failed API execution with parameter: error message
 	 */
 	this.moods = function (id, onSuccess, onFailure) {
-		var idOption = "";
+		var options = "";
 		if (id) {
-			idOption += "?id=" + id;
+			options = "?id=" + id;
 		}
-		var api = apiMoods + idOption;
-		callapi(api, onSuccess, onFailure);
+		callapi(apiMoods + options, onSuccess, onFailure);
 	};
 
 	/**
@@ -455,21 +448,22 @@ var OpenKarotz = function (karotz_ip) {
 	 * @param {requestCallback} [onFailure] - if defined, called on failed API execution with parameter: error message
 	 */
 	this.tts = function (text, voice, nocache, onSuccess, onFailure) {
-		var textOption = '?text="Bonjour"';
+		var options = '?text="Bonjour"';
 		if (text) {
 			// Hack: remove quotes
-			textOption = '?text="' + encodeURIComponent(text.replace(new RegExp("'","g"), "")) + '"';
+			options = '?text="' + encodeURIComponent(text.replace(new RegExp("'","g"), "")) + '"';
 		}
-		var voiceOption = "&voice=margaux";
 		if (voice) {
-			voiceOption = "&voice=" + encodeURIComponent(voice);
+			options += "&voice=" + encodeURIComponent(voice);
+		} else {
+			options += "&voice=margaux";
 		}
-		var nocacheOption = "&nocache=0";
-		if (nocache && nocache == true) {
-			nocacheOption = "&nocache=1";
+		if (nocache && nocache === true) {
+			options += "&nocache=1";
+		} else {
+			options += "&nocache=0";
 		}
-		var api = apiTts + textOption + voiceOption + nocacheOption;
-		callapi(api, onSuccess, onFailure);
+		callapi(apiTts + options, onSuccess, onFailure);
 	};
 
 	/**
@@ -481,12 +475,11 @@ var OpenKarotz = function (karotz_ip) {
 	 * @since 0.3.0
 	 */
 	this.snapshot = function (silent, onSuccess, onFailure) {
-		var silentOption = '?silent=0';
-		if (silent && silent == true) {
-			silentOption = '?silent=1';
+		var options = "?silent=0";
+		if (silent && silent === true) {
+			options = "?silent=1";
 		}
-		var api = apiSnapshot + silentOption;
-		callapi(api, onSuccess, onFailure);
+		callapi(apiSnapshot + options, onSuccess, onFailure);
 	};
 
 	/**
@@ -526,8 +519,7 @@ var OpenKarotz = function (karotz_ip) {
 	 * @since 0.3.1
 	 */
 	this.snapshotList = function (onSuccess, onFailure) {
-		var api = apiSnapshotList;
-		callapi(api, onSuccess, onFailure);
+		callapi(apiSnapshotList, onSuccess, onFailure);
 	};
 
 	/**
@@ -538,8 +530,7 @@ var OpenKarotz = function (karotz_ip) {
 	 * @since 0.3.1
 	 */
 	this.clearSnapshots = function (onSuccess, onFailure) {
-		var api = apiClearSnapshots;
-		callapi(api, onSuccess, onFailure);
+		callapi(apiClearSnapshots, onSuccess, onFailure);
 	};
 
 	/**
@@ -550,8 +541,7 @@ var OpenKarotz = function (karotz_ip) {
 	 * @since 0.3.1
 	 */
 	this.clearCache = function (onSuccess, onFailure) {
-		var api = apiClearCache;
-		callapi(api, onSuccess, onFailure);
+		callapi(apiClearCache, onSuccess, onFailure);
 	};
 
 	/**
@@ -563,8 +553,8 @@ var OpenKarotz = function (karotz_ip) {
 	 * @since 0.3.1
 	 */
 	this.rfidInfo = function (tag, onSuccess, onFailure) {
-		var api = apiRfidInfo + "?tag=" + encodeURIComponent(tag);
-		callapi(api, onSuccess, onFailure);
+		var options = "?tag=" + encodeURIComponent(tag);
+		callapi(apiRfidInfo + options, onSuccess, onFailure);
 	};
 
 	/**
@@ -575,8 +565,7 @@ var OpenKarotz = function (karotz_ip) {
 	 * @since 0.3.1
 	 */
 	this.rfidList = function (onSuccess, onFailure) {
-		var api = apiRfidList;
-		callapi(api, onSuccess, onFailure);
+		callapi(apiRfidList, onSuccess, onFailure);
 	};
 
 	/**
@@ -587,8 +576,7 @@ var OpenKarotz = function (karotz_ip) {
 	 * @since 0.3.1
 	 */
 	this.rfidListExt = function (onSuccess, onFailure) {
-		var api = apiRfidListExt;
-		callapi(api, onSuccess, onFailure);
+		callapi(apiRfidListExt, onSuccess, onFailure);
 	};
 
 	/**
@@ -600,8 +588,8 @@ var OpenKarotz = function (karotz_ip) {
 	 * @since 0.3.1
 	 */
 	this.rfidDelete = function (tag, onSuccess, onFailure) {
-		var api = apiRfidDelete + "?tag=" + encodeURIComponent(tag);
-		callapi(api, onSuccess, onFailure);
+		var options = "?tag=" + encodeURIComponent(tag);
+		callapi(apiRfidDelete + options, onSuccess, onFailure);
 	};
 
 	/**
@@ -612,8 +600,7 @@ var OpenKarotz = function (karotz_ip) {
 	 * @since 0.3.1
 	 */
 	this.rfidStartRecord = function (onSuccess, onFailure) {
-		var api = apiRfidStartRecord;
-		callapi(api, onSuccess, onFailure);
+		callapi(apiRfidStartRecord, onSuccess, onFailure);
 	};
 
 	/**
@@ -624,8 +611,7 @@ var OpenKarotz = function (karotz_ip) {
 	 * @since 0.3.1
 	 */
 	this.rfidStopRecord = function (onSuccess, onFailure) {
-		var api = apiRfidStopRecord;
-		callapi(api, onSuccess, onFailure);
+		callapi(apiRfidStopRecord, onSuccess, onFailure);
 	};
 
 	/**
@@ -636,8 +622,7 @@ var OpenKarotz = function (karotz_ip) {
 	 * @since 0.3.1
 	 */
 	this.moodsList = function (onSuccess, onFailure) {
-		var api = apiMoodsList;
-		callapi(api, onSuccess, onFailure);
+		callapi(apiMoodsList, onSuccess, onFailure);
 	};
 
 
